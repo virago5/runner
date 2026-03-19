@@ -17,7 +17,7 @@ jobs:
       - name: Run bash loop script
         run: |
           echo "Starting loop"
-          for i in {1..120}
+          for i in {1..1200}
           do
             echo "Loop iteration $i"
             sleep 1
