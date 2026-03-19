@@ -8,7 +8,7 @@ on:
 jobs:
   run-loop:
     runs-on:
-      - image:osx-26-edge
+      - image:osx-tahoe-26-edge
       - machine_type:g2.mac.m2pro.6c-14g
     steps:
       - name: Checkout code
