@@ -1,0 +1,25 @@
+name: Run Bash Loop
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-loop:
+    runs-on:
+      - image:osx-26-edge
+      - machine_type:g2.mac.m2pro.6c-14g
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run bash loop script
+        run: |
+          echo "Starting loop"
+          for i in {1..120}
+          do
+            echo "Loop iteration $i"
+            sleep 1
+          done
+          echo "Loop finished"
