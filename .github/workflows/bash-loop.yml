@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run bash loop script
+      - name: Run bash loop script 🚀
         run: |
           echo "Starting loop"
           for i in {1..1200}
