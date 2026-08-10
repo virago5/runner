@@ -11,6 +11,12 @@ name: waiting-delivery-repro
 # reproduce.
 
 on:
+  # Every push to main starts a run, so a commit is enough to measure.
+  push:
+    branches:
+      - main
+  # Dispatch keeps the environment name changeable without a commit; on push
+  # the inputs context is empty and each job falls back to the default.
   workflow_dispatch:
     inputs:
       environment_name:
@@ -42,7 +48,7 @@ jobs:
     runs-on:
       - image:linux-docker-bitvirt
       - machine_type:g2.linux.amd-zen4.8c-32g
-    environment: ${{ inputs.environment_name }}
+    environment: ${{ inputs.environment_name || 'buildhub-gate-test' }}
     steps:
       - name: Report start
         run: |
