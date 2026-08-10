@@ -5,14 +5,14 @@ name: waiting-delivery-repro
 #
 # The gate itself is an environment protection rule, not something this file
 # can set. See docs/github-waiting-delivery-repro.md for the one-time setup.
+#
+# The pool behind these labels must be scale-to-zero, ephemeral and on GitHub
+# App auth, or the event autoscaler does not manage it and there is nothing to
+# reproduce.
 
 on:
   workflow_dispatch:
     inputs:
-      runner_label:
-        description: Pool label to run on
-        required: true
-        default: buildhub-m2pro
       environment_name:
         description: Environment carrying the wait timer
         required: true
@@ -20,23 +20,41 @@ on:
 
 jobs:
   # Baseline: no gate. Its queued delivery is immediately servable, so the
-  # machine it gets is the one the autoscaler is supposed to start.
+  # machine it gets is the one the autoscaler is supposed to start. Compare
+  # its timestamps with the gated job's.
   control:
-    runs-on: ${{ inputs.runner_label }}
+    runs-on:
+      - image:linux-docker-bitvirt
+      - machine_type:g2.linux.amd-zen4.8c-32g
     steps:
       - name: Report start
         run: |
-          echo "control job started at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "control job started at $(date -u +%Y-%m-%dT%H:%M:%SZ) ($(date +%s))"
           echo "runner: $RUNNER_NAME"
+
+      - name: Hold the machine briefly
+        run: sleep 30
 
   # Gated: GitHub sends queued, then waiting a second later, then queued again
   # when the timer expires. Before the fix a machine is provisioned on the
   # first queued and stands idle for the whole wait.
   gated:
-    runs-on: ${{ inputs.runner_label }}
+    runs-on:
+      - image:linux-docker-bitvirt
+      - machine_type:g2.linux.amd-zen4.8c-32g
     environment: ${{ inputs.environment_name }}
     steps:
       - name: Report start
         run: |
-          echo "gated job started at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "gated job started at $(date -u +%Y-%m-%dT%H:%M:%SZ) ($(date +%s))"
           echo "runner: $RUNNER_NAME"
+
+      # Two minutes of visible work: long enough to watch the machine hold the
+      # job in the pool metrics, short enough not to sit on the pool.
+      - name: Count out two minutes
+        run: |
+          for i in $(seq 1 120); do
+            echo "$i s — $(date -u +%H:%M:%S)"
+            sleep 1
+          done
+          echo "loop finished at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
