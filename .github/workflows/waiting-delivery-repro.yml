@@ -1,0 +1,42 @@
+name: waiting-delivery-repro
+
+# Reproduces the queued -> waiting -> queued delivery sequence that made the
+# autoscaler provision a machine for a job that could not run yet.
+#
+# The gate itself is an environment protection rule, not something this file
+# can set. See docs/github-waiting-delivery-repro.md for the one-time setup.
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner_label:
+        description: Pool label to run on
+        required: true
+        default: buildhub-m2pro
+      environment_name:
+        description: Environment carrying the wait timer
+        required: true
+        default: buildhub-gate-test
+
+jobs:
+  # Baseline: no gate. Its queued delivery is immediately servable, so the
+  # machine it gets is the one the autoscaler is supposed to start.
+  control:
+    runs-on: ${{ inputs.runner_label }}
+    steps:
+      - name: Report start
+        run: |
+          echo "control job started at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "runner: $RUNNER_NAME"
+
+  # Gated: GitHub sends queued, then waiting a second later, then queued again
+  # when the timer expires. Before the fix a machine is provisioned on the
+  # first queued and stands idle for the whole wait.
+  gated:
+    runs-on: ${{ inputs.runner_label }}
+    environment: ${{ inputs.environment_name }}
+    steps:
+      - name: Report start
+        run: |
+          echo "gated job started at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "runner: $RUNNER_NAME"
