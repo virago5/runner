@@ -1,9 +1,16 @@
 name: Run Bash Loop
 
+# Parked while the waiting-delivery repro is being measured: it would take a
+# machine from the same pool on every push and muddy the observation. Restore
+# the push trigger below when the measurement is done.
+#
+# on:
+#   push:
+#     branches:
+#       - main
+
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   run-loop:
