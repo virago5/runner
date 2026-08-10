@@ -39,7 +39,7 @@ jobs:
           echo "runner: $RUNNER_NAME"
 
       - name: Hold the machine briefly
-        run: sleep 30
+        run: sleep 300
 
   # Gated: GitHub sends queued, then waiting a second later, then queued again
   # when the timer expires. Before the fix a machine is provisioned on the
