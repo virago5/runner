@@ -16,8 +16,8 @@ jobs:
       matrix:
         idx: [1, 2]
     runs-on:
-      - self-hosted
-      - "bitrise_pool_name:Gihub app connection test linux"
+      - "image:linux-docker-bitvirt"
+      - "machine_type:g2.linux.amd-zen4.8c-32g"
     timeout-minutes: 5
     steps:
       - name: work
