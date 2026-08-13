@@ -11,7 +11,8 @@ on:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ${{ vars.CODEQL_RUNNER }}
+    runs-on: 
+      group: ${{ vars.CODEQL_RUNNER }}
     permissions:
       security-events: write
       packages: read
