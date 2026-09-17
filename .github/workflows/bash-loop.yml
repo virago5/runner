@@ -15,8 +15,8 @@ on:
 jobs:
   run-loop:
     runs-on:
-      - image:linux-docker-bitvirt
-      - machine_type:g2.linux.amd-zen4.8c-32g
+      - image:osx-27-edge
+      - machine_type:g2.mac.m2pro.4c-6g
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
