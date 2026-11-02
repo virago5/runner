@@ -1,0 +1,16 @@
+name: Run Bash Loop (Linux)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-loop:
+    runs-on:
+      - image:linux-bitvirt-2026
+      - machine_type:g2.linux.amd-zen4.4c-16g
+    steps:
+      - name: Run bash loop script
+        run: |
+          echo "Starting loop on $(uname -a)"
+          for i in $(seq 1 60); do echo "Loop iteration $i"; sleep 1; done
+          echo "Loop finished"
